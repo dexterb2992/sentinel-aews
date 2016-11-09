@@ -1,0 +1,284 @@
+jQuery(document).ready(function(){
+	var $ = jQuery;
+
+    $("#start_tests").click(function (){
+        $this = $(this);
+
+        if( $("#websites").val() === "" ){
+            return false;
+        }
+        
+        //  refresh
+        $("#process_logs").html("");
+        $(".scan-findings").fadeOut(function (){
+            $("#more_details").text("Show more details");
+            $("#more_details").removeClass('active');
+        });
+
+        var websites = explode_websites( $("#websites").val() );
+        var new_els = [];
+
+        $.each(websites, function (index, row){
+            el = $('<div id="res_'+row+'" title="Scan results for '+row+'"></div>');
+            $("#process_logs").append( el );
+            new_els[row] = el;
+        });
+
+        websites_length = websites.length;
+        $.each(websites, function (index, row){
+            // we should use queue here
+            // first, check if website is up & running
+
+            $("#process_status").text("Checking to see if "+row+" is up & running...");
+                    $this.removeClass('btn-info').addClass('btn-warning')
+                    .children('i').removeClass('fa-hourglass-start').addClass('fa-refresh fa-spin');
+
+            if( validate_domain(row) ){
+                $("#process_status").html("");
+                $this.removeClass('btn-warning').addClass('btn-info')
+                    .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
+                
+                // let's continue if the site is up & running
+                // SUCURI SCAN
+                sucuri_scan(row, $this, new_els[row]);
+            }else{
+                $("#process_status").text("");
+                $("#process_logs").html( $("#process_logs").html()+"<span class='label label-danger'>"+row+" cannot be reached.</span><br/>" );
+                $this.removeClass('btn-warning').addClass('btn-info')
+                    .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
+            }
+
+            Executed = false;
+            $(document).ajaxStop(function () {
+                // Executed when all ajax requests are done.
+                if (!Executed) save_scan();
+                Executed = true;
+            });
+
+        });
+
+       
+    });
+
+    $("#clear_logs").click(function (){
+        
+        $("#process_logs").html("").fadeIn();
+    });
+
+    window.validate_domain = function(domain){
+        if( /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(domain) ){
+            return true;
+        }
+        
+        return false;
+    };
+
+    function sucuri_scan(url, button, output_loc){
+        $.ajax({
+            url: ajaxurl,
+            type: 'post',
+            data: {
+                q: 'sucuri_scan', url: url
+            },
+            assync: false,
+            beforeSend: function (){
+                $("#process_status").text("Checking to see if "+url+" is blacklisted  and/or containing malware...");
+                disableButton(button);
+            }
+        }).done(function (data){
+            $("#process_status").html("");
+            enableButton(button);
+            google_diagnostic(url, button, output_loc);
+
+            output_loc.append( "<br/>"+data+"<hr>" );
+            console.log(data);
+        }).error(function (data){
+            enableButton(button);
+            google_diagnostic(url, button, output_loc);
+        });
+    }
+
+    function google_diagnostic(url, button, output_loc){
+        $.ajax({
+            url: ajaxurl,
+            type: 'post',
+            data: {
+                q: 'google_diagnostic', url: url
+            },
+            assync: false,
+            beforeSend: function (){
+                $("#process_status").text("Cheking if google listed "+url+" as harmful...");
+                disableButton(button);
+            }
+        }).done(function (data){
+            $("#process_status").html("");
+            output_loc.append( "<br/>"+data+"<hr>" );
+            enableButton(button);
+            ultratools_scan(url, button, output_loc);
+
+            console.log(data);
+        }).error(function (data){
+            enableButton(button);
+            ultratools_scan(url, button, output_loc);
+        });
+    }
+
+    function ultratools_scan(url, button, output_loc){
+        $.ajax({
+            url: ajaxurl,
+            type: 'post',
+            data: {
+                q: 'ultratools_scan', url: url
+            },
+            assync: false,
+            beforeSend: function (){
+                $("#process_status").text("Cheking if "+url+" is listed on any Spam Blackist...");
+                disableButton(button);
+            },
+            success: function (data){
+                $("#process_status").html("");
+                output_loc.append( "<br/>"+data+"<hr>" );
+                enableButton(button);
+                console.log(data);
+            },
+            error: function (data){
+                enableButton(button);
+            }
+        });
+    }
+
+    
+
+    //
+    function explode_websites(str){
+        var ks = str.split("\n");
+        return ks;
+    }
+
+    function disableButton($button){
+        $button.removeClass('btn-info').addClass('btn-warning')
+                    .children('i').removeClass('fa-hourglass-start').addClass('fa-refresh fa-spin');
+    }
+
+    function enableButton($button){
+        $button.removeClass('btn-warning').addClass('btn-info')
+                    .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
+    }
+
+
+    window.save_scan = function (){
+        websites = $("#websites").val().replace(/\n/g, ",");;
+        // urls = "";
+        console.log("websites: "+websites);
+        $.ajax({
+            url: ajaxurl,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                q: 'save_scan',
+                url: websites,
+                scan_result: $("#process_logs").html()
+            },
+            beforeSend: function (){
+                $("#process_status").text("");
+            },
+            success: function (data){
+                $("#process_status").text("Next scan will be on "+data.next_scan+".").fadeIn().delay(20000).queue(function(n) {
+                  $(this).text("").fadeOut(); n();
+                });
+            },
+            error: function (data){
+                console.log(data);
+                alert("Opps, something went wrong while we schedule for the next scan. Please try again later.");
+            }
+        });
+
+       
+    };
+
+
+    $(document).on("click", "#more_details", function (){
+        $this = $(this);
+        if( $this.hasClass("active") ){
+            $(".scan-findings").fadeOut(function (){
+                $this.text("Show more details");
+                $this.removeClass('active');
+            });
+        }else{
+            $(".scan-findings").fadeIn(function (){
+                $this.text("Show less details");
+                $this.addClass('active');
+            });
+        }
+    });
+
+    $(document).on("click", ".delete-scan", function (){
+        var $this = $(this);
+
+        $.ajax({
+            url: ajaxurl,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                q: 'delete_scan',
+                id: $this.attr("data-id")
+            },
+            beforeSend: function (){
+                $this.text( 'Please wait...' ).addClass("disabled");
+            },
+            success: function (data){
+                if( data == 1 ){
+                    $this.parent("td").parent("tr").fadeOut();
+                }
+            },
+            error: function (data){
+                $this.prev("i.fa-refresh").remove();
+                $this.html("Delete");
+            }
+        });
+    });
+
+    $("#save_settings").click(function (){
+        if( $("#email_address").val() == "" ){
+            $("#email_address").focus();
+            return false;
+        }
+
+        $this = $(this);
+        $.ajax({
+            url: ajaxurl,
+            type: 'post',
+            dataType: 'json',
+            data: $("#sentinel_settings").serialize()+'&q=save_sentinel_settings',            
+            beforeSend: function (){
+                $this.children('i').removeClass('fa-save').addClass('fa-refres fa-spin disabled');
+            },
+            success: function (res){
+                console.log(res);
+                $this.children('i').removeClass('fa-refres fa-spin disabled').add('fa-save');
+
+                if( res == 1 ){
+                    statusInfo = $('<span class="label label-success"><i class="fa fa-check"></i> Your changes have been saved.</span>');
+                }else{
+                    statusInfo = $('<span class="label label-danger"><i class="fa fa-warning"></i> Sorry, please reload the page and try again.</span>');
+
+                }
+
+                if( $this.prev('span.label').length != 0 ){
+                    $this.prev('span.label').replaceWith(statusInfo).fadeIn().delay(10000).queue(function(n) {
+                      statusInfo.fadeOut().remove(); n();
+                    });
+                }else{
+                    $this.before(statusInfo).fadeIn().delay(10000).queue(function(n) {
+                      statusInfo.fadeOut().remove(); n();
+                    });
+                }
+                
+
+            },
+            error: function (data){
+                $this.children('i').removeClass('fa-refres fa-spin disabled').add('fa-save');
+            }
+        });
+    });
+});

@@ -1,0 +1,131 @@
+@import url(https://fonts.googleapis.com/css?family=Abel);
+
+.main-header .navbar-nav li:last-child { display: none; }
+
+.main-header .logo-lg { line-height: 47px; }
+.main-header .logo-lg b{ position: relative; font-family: 'Abel', sans-serif; font-size: 21px; }
+
+.sidebar .user-panel:first-child { display: block; background: #1a2226; padding: 15px; border-bottom: 1px solid #161c1f; }
+.sidebar .user-panel:first-child span { display: block; padding-top: 5px; font-size: 12px; color: #687277; }
+.sidebar .user-panel:first-child span a { color: #a0aaaf; }
+
+.sidebar-menu .header { display: none; }
+
+.menu-main-sidebar-container .fa.fa-chevron-right { color: #667075; }
+
+.font-xs{
+    font-size: 70%;
+}
+
+.error-page>.error-content{
+  padding-top: 20px
+}
+
+.process_logs {
+    border: 1px solid #9E9E9E;
+    margin-top: 12px;
+    padding: 0 0 6px 6px;
+    min-height: 50px;
+}
+
+.log-option{
+	margin-top: 5px;
+    margin-right: 5px;
+}
+
+/* Sucuri Scan */
+	.scan-findings {
+	    display: none;
+	}
+
+	.table.main-result>tbody>tr>td {
+	    border: none;
+	    line-height: 1em;
+	    font-size: 15px;
+	    font-weight: bold;
+	}
+
+	.red, .red a, .infected-table-main {
+	    color: #cc0000;
+	}
+
+	a, .blue, .infected-table-main span a {
+	    color: #2888ab;
+	}
+
+	span.cleanup {
+	    background: #cc0000;
+	    padding: 2px 4px;
+	    margin-right: 5px;
+	    color: #fff;
+	    font-size: 11px;
+	    text-transform: uppercase;
+	}
+
+	span.protect {
+	    background: #f1ab32;
+	    padding: 2px 4px;
+	    margin-right: 5px;
+	    color: #fff;
+	    font-size: 11px;
+	    text-transform: uppercase;
+	}
+
+
+
+	td.scan-red, td.scan-yellow, td.scan-blue, td.scan-green {
+		display: inline-block;
+	    font-size: inherit;
+	    text-rendering: auto;
+	    -webkit-font-smoothing: antialiased;
+	    -moz-osx-font-smoothing: grayscale;
+	    padding-left: 30px;
+	}
+
+	td.scan-red:before {
+	    content: "\f071";
+	    color: #cc0000;
+	}
+
+	td.scan-yellow:before{
+		content: "\f071";
+		color: #f39c12;
+	}
+
+	td.scan-blue:before {
+		content: "\f05a";
+		color: #31708f;
+	}
+
+	td.scan-green:before {
+	    content: "\f058";
+	    color: #00a65a;
+	}
+
+	td.scan-red:before, td.scan-yellow:before, td.scan-blue:before, td.scan-green:before{
+		font: normal normal normal 14px/1 FontAwesome;
+		margin-right: 2px;
+	}
+
+
+.table-error {
+    color: red;
+}
+
+.status-dangerous {
+	font-weight: bold;
+    color: #DD4B39;
+}
+
+.status-not-dangerous {
+    font-weight: bold;
+    color: #3c763d;
+}
+
+.r-margin2{
+	margin-right: 2px;
+}
+
+.link {
+	cursor: pointer;
+}
