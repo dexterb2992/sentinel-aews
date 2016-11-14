@@ -48,7 +48,8 @@
 										</span>';
 
 							if( $title == 'Domain' ){
-								$link = filter_var($item->domain_list, FILTER_VALIDATE_URL) ? $item->domain_list : 'http://'.$$item->domain_list;
+
+								$link = filter_var($item->domain_list, FILTER_VALIDATE_URL) ? $item->domain_list : 'http://'.$item->domain_list;
 								$domain_name = "<a href=\"$link\" title=\"$link\" target=\"_blank\">$prefix $item->domain_list</p>";
 							}else{
 								$domain_name = '<p title="'.$item->domain_list.'">'.$prefix.$item->domain_list.'</p>';
