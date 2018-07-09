@@ -41,82 +41,77 @@
             }
         });
 
-        start_tests.on(
-            "click", function (){
-                $this = $(this);
-                var __websites = $("#websites").val();
+        start_tests.on("click", function (){
+            $this = $(this);
+            var __websites = $("#websites").val();
+            __websites = __websites.split("http://").join("");
+            __websites = __websites.split("https://").join("");
 
-                // __websites = __websites.replace(/http:\/\//g, '');
-                // __websites = __websites.replace(/https:\/\//g, '');
-                __websites = __websites.split("http://").join("");
-                __websites = __websites.split("https://").join("");
+            if( __websites === "" ){
+                return false;
+            }
 
-                if( __websites === "" ){
-                    return false;
+            var process_logs = $("#process_logs");
+            var process_status = $("#process_status");
+            var more_details = $("#more_details");
+
+            //  refresh
+            process_logs.html("");
+            $(".scan-findings").fadeOut(function (){
+                more_details.text("Show more details").removeClass('active');
+            });
+
+            var websites = explode_websites( __websites );
+            var new_els = [];
+
+            $.each(websites, function (index, row){
+                el = $('<div id="res_'+row+'" title="Scan results for '+row+'"></div>');
+                process_logs.append( el );
+                new_els[row] = el;
+            });
+
+            var websites_length = websites.length;
+            var HasError = false;
+
+            $.each(websites, function (index, row){
+                // we should use queue here
+                // first, check if website is up & running
+
+                process_status.text("Checking to see if "+row+" is up & running...");
+                        $this.removeClass('btn-info').addClass('btn-warning')
+                        .children('i').removeClass('fa-hourglass-start').addClass('fa-refresh fa-spin');
+
+                if( validate_domain(row) ){
+                    process_status.html("");
+                    $this.removeClass('btn-warning').addClass('btn-info')
+                        .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
+                    
+                    // check if site is up & running
+                    checkDomain(row).done(function (data){
+                        if( data.status == 'success' ){
+                            // let's continue if the site is up & running
+                            // SUCURI SCAN
+                            sucuri_scan(row, $this, new_els[row]);
+                        }else{
+                            logErrors(row, $this);
+                            HasError = true;
+                        }
+                    });    
+
+                }else{
+                    logErrors(row, $this);
+                    HasError = true;
                 }
 
-                var process_logs = $("#process_logs");
-                var process_status = $("#process_status");
-                var more_details = $("#more_details");
-
-                //  refresh
-                process_logs.html("");
-                $(".scan-findings").fadeOut(function (){
-                    more_details.text("Show more details").removeClass('active');
+                Executed = false;
+                $(document).ajaxStop(function () {
+                    // Executed when all ajax requests are done.
+                    if (!Executed && !HasError) save_scan();
+                    Executed = true;
                 });
 
-                var websites = explode_websites( __websites );
-                var new_els = [];
-
-                $.each(websites, function (index, row){
-                    el = $('<div id="res_'+row+'" title="Scan results for '+row+'"></div>');
-                    process_logs.append( el );
-                    new_els[row] = el;
-                });
-
-                var websites_length = websites.length;
-                var HasError = false;
-
-                $.each(websites, function (index, row){
-                    // we should use queue here
-                    // first, check if website is up & running
-
-                    process_status.text("Checking to see if "+row+" is up & running...");
-                            $this.removeClass('btn-info').addClass('btn-warning')
-                            .children('i').removeClass('fa-hourglass-start').addClass('fa-refresh fa-spin');
-
-                    if( validate_domain(row) ){
-                        process_status.html("");
-                        $this.removeClass('btn-warning').addClass('btn-info')
-                            .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
-                        
-                        // check if site is up & running
-                        checkDomain(row).done(function (data){
-                            if( data.status == 'success' ){
-                                // let's continue if the site is up & running
-                                // SUCURI SCAN
-                                sucuri_scan(row, $this, new_els[row]);
-                            }else{
-                                logErrors(row, $this);
-                                HasError = true;
-                            }
-                        });    
-
-                    }else{
-                        logErrors(row, $this);
-                        HasError = true;
-                    }
-
-                    Executed = false;
-                    $(document).ajaxStop(function () {
-                        // Executed when all ajax requests are done.
-                        if (!Executed && !HasError) save_scan();
-                        Executed = true;
-                    });
-
-                });
-            }
-        );
+            });
+        });
 
         clear_logs.on("click", function (){
             $("#process_logs").html("").fadeIn();

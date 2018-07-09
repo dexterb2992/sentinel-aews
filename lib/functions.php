@@ -324,10 +324,11 @@ function get_next_scan($last_scan, $wp_user_id = 0){
 }
 
 function sucuri_scan($url){
-	$u = "http://sitecheck.sucuri.net/results/$url";
-	
+	$source = "https://www.siteadvisor.com/";
+	$u = "{$source}sitereport.html?url=$url";
 
 	$data = getPageData($u);
+	$send_email = 0;
 
 	libxml_use_internal_errors(true);
 
@@ -335,22 +336,137 @@ function sucuri_scan($url){
 
 	@$dom->loadHTML($data);
 
-	$tables = $dom->getElementsByTagName("table");
-	$htmltables = "";
-	// extract title tag
-	foreach ($tables as $table) {
-		$htmltables .= '<table class="'.$table->getAttribute('class').'">'.DOMgetInnerHTML($table).'</table>';
+	$divs = $dom->getElementsByTagName("div");
+
+	$stylesheets = '<style>
+		#sitereport {
+		    width: auto;
+		    margin: 0 auto;
+		}
+
+		#sitereport .danger {
+		    background-color: #f1342f;
+		}
+
+		#sitereport .warning {
+		    background-color: #f90;
+		}
+
+		#sitereport .safe {
+		    background-color: #0bd175;
+		}
+
+		#sitereport .row {
+			margin-left: 0;
+			margin-right: 0;
+			display: block;
+		}
+
+		#sitereport .content {
+		    background-color: #fff;
+		    padding-left: 80px;
+		    padding-top: 2px;
+		    display: inline-block;
+		}
+
+		#sitereport .status {
+		    width: 251px;
+		    height: 100%;
+		    float: left;
+		    text-align: center;
+		    overflow: hidden;
+		    padding-top: 20px;
+		    padding-bottom: 20px;
+		    display: inline-block;
+		}
+
+		#sitereport .status>div {
+		    color: #fff;
+		    margin-top: 32px;
+		}
+
+		#sitereport .status .text {
+		    display: block;
+		    font-size: 18px;
+		    font-weight: 600;
+		    margin-bottom: 6px;
+		}
+
+		#sitereport .status .rating {
+		    font-size: 32px;
+		    font-weight: 200;
+		    line-height: 43px;
+		}
+
+		#sitereport .content>span {
+		    margin-bottom: 24px;
+		    padding-right: 10px;
+		    font-size: 24px;
+		    font-weight: 600;
+		    color: #52565a;
+		    display: inline-block;
+		    line-height: 28px;
+		}
+
+		#sitereport .content .url {
+		    color: #139deb;
+		}
+
+		#sitereport .content div {
+		    width: 90%;
+		    font-size: 14px;
+		    line-height: 19px;
+		    color: #939598;
+		}
+
+		#sitereport .content ul {
+		    padding-left: 0;
+		    color: #b1babf;
+		}
+
+		#sitereport .content li a {
+		    display: inline-block;
+		    height: 16px;
+		    font-size: 16px;
+		    color: #139deb;
+		    cursor: default;
+		}
+	</style>';
+
+	$divresults = $stylesheets;
+
+	// extract div tag
+	foreach ($divs as $div) {
+		$class = $div->getAttribute("class");
+		$cleaned_class = str_replace('container', '', $class);
+
+		if ($class == "container safe" || $class == "container warning" || $class == "container danger") {
+			$divresults .= '<div id="sitereport"><div class="row '.$cleaned_class.'">'.DOMgetInnerHTML($div).'</div></div>';
+
+			if (strpos($class, "warning") !== false || strpos($class, "danger") !== false) {
+				$send_email = 1;
+			}
+		}
 	}
 
-	// return $htmltables;
+	$search = [
+		'src="/',
+		'href="/',
+		'class="status',
+		'class="content'
+	];
 
-	$send_email = 0;
-	if( strpos($htmltables, 'class="red"') !== false ){
-		$send_email = 1;
-	}
+	$replacement = [
+		'src="'.$source,
+		'href="'.$source,
+		'class="status col-md-4',
+		'class="content col-md-8'
+	];
+
+	$divresults2 = str_replace($search, $replacement, $divresults);
 
 	return array(
-		'html' => $htmltables,
+		'html' => $divresults2,
 		'send_email' => $send_email
 	);
 }
