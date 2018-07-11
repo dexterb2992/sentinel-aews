@@ -19,7 +19,7 @@
 				<span class="label-info label">Last Scan: <?php echo $list['last_scan']; ?></span>
 				<span class="label-warning label">Next Scan: <?php echo $list['next_scan']; ?></span>
 				<br/>
-				<span class="btn-xs btn btn-flat btn-info log-option pull-right" id="more_details" data-toggle="tooltip" data-original-title="Show more details" style="margin-top: -14px;">Show more details</span>
+				<!-- <span class="btn-xs btn btn-flat btn-info log-option pull-right" id="more_details" data-toggle="tooltip" data-original-title="Show more details" style="margin-top: -14px;">Show more details</span> -->
 				<br/>
 				<div <?php echo $list['scan_type'] == 'sentinel' ? 'class="process_logs"' : ''; ?> id="process_logs">
 					<div class="<?php echo $list['scan_type'] == 'sentinel' ? 'entry' : ''; ?>">
@@ -31,7 +31,7 @@
 										'.$list['domain_list'].'
 									</div>';
 								echo '<div class="result">';
-								echo $list['last_scan_result']; 
+								echo stripcslashes(urldecode($list['last_scan_result'])); 
 								echo '</div>';
 							}else{
 								if( $list['last_scan_result'] != "" && $list['last_scan_result'] != null ){

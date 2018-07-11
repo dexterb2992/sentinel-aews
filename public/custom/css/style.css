@@ -129,3 +129,98 @@
 .link {
 	cursor: pointer;
 }
+
+
+/* siteadvisor/malware scan */
+#sitereport {
+    width: auto;
+    margin: 0 auto;
+}
+
+#sitereport .danger {
+    background-color: #f1342f;
+}
+
+#sitereport .warning {
+    background-color: #f90;
+}
+
+#sitereport .safe {
+    background-color: #0bd175;
+}
+
+#sitereport .row {
+	margin-left: 0;
+	margin-right: 0;
+	display: block;
+}
+
+#sitereport .content {
+    background-color: #fff;
+    padding-left: 80px;
+    padding-top: 2px;
+    display: inline-block;
+}
+
+#sitereport .status {
+    width: 251px;
+    height: 100%;
+    float: left;
+    text-align: center;
+    overflow: hidden;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: inline-block;
+}
+
+#sitereport .status>div {
+    color: #fff;
+    margin-top: 32px;
+}
+
+#sitereport .status .text {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+#sitereport .status .rating {
+    font-size: 32px;
+    font-weight: 200;
+    line-height: 43px;
+}
+
+#sitereport .content>span {
+    margin-bottom: 24px;
+    padding-right: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #52565a;
+    display: inline-block;
+    line-height: 28px;
+}
+
+#sitereport .content .url {
+    color: #139deb;
+}
+
+#sitereport .content div {
+    width: 90%;
+    font-size: 14px;
+    line-height: 19px;
+    color: #939598;
+}
+
+#sitereport .content ul {
+    padding-left: 0;
+    color: #b1babf;
+}
+
+#sitereport .content li a {
+    display: inline-block;
+    height: 16px;
+    font-size: 16px;
+    color: #139deb;
+    cursor: default;
+}
