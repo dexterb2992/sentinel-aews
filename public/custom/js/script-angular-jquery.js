@@ -63,8 +63,18 @@ function WpScanController($scope, $http, $timeout){
 			
 			response = response.data;
 
-			// lets conver the json object to json array
+			// lets convert the json object to json array
 			var arr = $.map(response.response, function(el) { return el; });
+
+			if (response.response.hasOwnProperty('error')) {
+				$scope.themePluginError.msg = response.response.error;	
+				$scope.displayError();
+
+				$scope.AjaxLoading = false;
+				$scope.wpScanForm.$setPristine();
+
+				return;
+			}
 
 			if(!response.response.status){
 				$scope.resultsVulnerabilities = []; // empty old results
@@ -76,7 +86,7 @@ function WpScanController($scope, $http, $timeout){
 				$scope.saveWPScan(slug, $scope.resultsVulnerabilities, type);
 
 				if( arr[0].vulnerabilities.length < 1 ){
-					$scope.themePluginError.msg = 'No data found for <strong>'+slug+'</strong>.';	
+					$scope.themePluginError.msg = 'No data found for '+slug;
 					$scope.displayError();				
 				}
 			}else{
