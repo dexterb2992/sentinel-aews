@@ -1,5 +1,42 @@
 <!-- Your Page Content Here -->
-<?php js_include('angular.min.js', 'custom'); ?>
+<?php
+	js_include('angular.min.js', 'custom');
+
+	$installed_plugins = get_plugins();
+
+	$filteredPlugins = [];
+	$slug = "";
+
+	foreach ($installed_plugins as $key => $plugin) {
+		$slug = explode("/", $key); 
+		$filteredPlugins[] = [
+			'name' => $plugin['Name'],
+			'slug' => isset($slug[0]) ? $slug[0] : $key
+		];
+	}
+
+	$installed_themes = wp_get_themes();
+	$currentTheme = wp_get_theme();
+	$filteredThemes = [];
+
+	$slug = "";
+
+	foreach ($installed_themes as $key => $theme) {
+		$slug = explode("/", $key); 
+		$filteredThemes[] = [
+			'name' => $theme->get('Name'),
+			'slug' => $theme->get('TextDomain'),
+			'current' => $currentTheme->get('TextDomain') == $theme->get('TextDomain') ? true : false
+		];
+	}
+
+?>
+
+<script>
+	window.WPSentinel = {};
+	WPSentinel.plugins = JSON.parse('<?php echo json_encode($filteredPlugins); ?>');
+	WPSentinel.themes = JSON.parse('<?php echo json_encode($filteredThemes); ?>');
+</script>
 
 <div class="box box-warning" ng-app="wpScan" ng-controller="wpScanCtrl">
 	<div class="box-header">
@@ -13,10 +50,10 @@
 	<div class="box-body">
 		<div class="row">
 			<div class="col-md-10">
-				<a class="btn-warning btn-md btn-flat pull-right btn" data-toggle="tooltip" data-original-title="View your previous WordPress Vulnerabilities scan." id="prev_wp_scan" ng-click="showPreviousScans()">
+				<a class="bg-yellow-gradient btn-warning btn-md btn-flat pull-right btn" data-toggle="tooltip" data-original-title="View your previous WordPress Vulnerabilities scan." id="prev_wp_scan" ng-click="showPreviousScans()">
 					<i class="fa fa-history"></i> Previous Scans
 				</a>
-				<a class="btn-info btn-md btn-flat pull-right btn r-margin2" data-toggle="tooltip" data-original-title="Check your WordPress plugins and themes installed on your blog for possible vulnerabilities." href="javascript:void(0)" id="new_wp_scan">
+				<a class="bg-aqua-gradient btn-info btn-md btn-flat pull-right btn r-margin2" data-toggle="tooltip" data-original-title="Check your WordPress plugins and themes installed on your blog for possible vulnerabilities." href="javascript:void(0)" id="new_wp_scan">
 					<i class="fa fa-search"></i> New Scan
 				</a>
 			</div>
@@ -27,8 +64,8 @@
 					require __LIB."WPVulnerabilities.php";
 
 					$wpvnb = new WPVulnerabilities();
-					
 				?>
+				
 				<div class="nav-tabs-custom">
 					<ul class="nav nav-tabs">
 						<li class="active">
@@ -40,6 +77,16 @@
 						<li>
 							<a href="#themes" data-toggle="tab" aria-expanded="false">Themes</a>
 						</li>
+						<li>
+							<a href="#installed_plugins" data-toggle="tab" aria-expanded="false">
+								Installed Plugins
+							</a>
+						</li>
+						<li>
+							<a href="#installed_themes" data-toggle="tab" aria-expanded="false">
+								Installed Themes
+							</a>
+						</li>
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="wordpresses">
@@ -50,6 +97,77 @@
 						</div>
 						<div class="tab-pane" id="themes">
 							<?php echo $wpvnb->get_table_elements("themes"); ?>
+						</div>
+						<div class="tab-pane" id="installed_plugins">
+							<table class="table table-bordered table-striped">
+								<thead>
+									<tr>
+										<th>Slug</th>
+										<th>Name</th>
+										<th>Findings</th>
+									</tr>
+								</thead>
+								<tbody>
+								<?php foreach ($filteredPlugins as $key => $plugin): ?>
+									<tr data-item="<?php echo $plugin['slug']; ?>">
+										<td><?php echo $plugin['slug']; ?></td>
+										<td><?php echo $plugin['name']; ?></td>
+										<td class="findings">
+											<span class="label bg-teal-gradient" data-toggle="tooltip"
+												data-original-title="Not found on the previous Plugins vulnerabilities tab">
+												<i class="fa fa-check"></i> No vulnerability match
+											</span>
+										</td>
+										<td>
+											<a href="javascript:void" class="btn bg-aqua-gradient btn-info"
+											   ng-click="reScan('plugins', '<?php echo $plugin['slug']; ?>')"
+											   data-toggle="tooltip" data-original-title="Check for vulnerabilities">
+												<i class="fa fa-refresh"></i> Scan
+											</a>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="tab-pane" id="installed_themes">
+							<table class="table table-bordered table-striped">
+								<thead>
+									<tr>
+										<th>Slug</th>
+										<th>Name</th>
+										<th>Findings</th>
+										<td>Action</td>
+									</tr>
+								</thead>
+								<tbody>
+								<?php foreach ($filteredThemes as $key => $theme): ?>
+									<tr data-item="<?php echo $theme['slug']; ?>">
+										<td><?php echo $theme['slug']; ?></td>
+										<td>
+											<?php echo $theme['name']; ?>
+											<?php if ($theme['current']): ?>
+												<span class="label bg-green-gradient">Current Theme</span>
+											<?php endif; ?>
+										</td>
+										<td class="findings">
+											<span class="label bg-teal-gradient" data-toggle="tooltip"
+												data-original-title="Not found on the previous Themes vulnerabilities tab">
+												<i class="fa fa-check"></i> No vulnerability match
+											</span>
+										</td>
+										<td>
+											<a href="javascript:void" class="btn bg-aqua-gradient btn-info"
+											   ng-click="reScan('plugins', '<?php echo $theme['slug']; ?>')"
+											   data-toggle="tooltip" data-original-title="Check for vulnerabilities">
+												<i class="fa fa-refresh"></i> Scan
+											</a>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>
@@ -74,10 +192,11 @@
 					</div>
 				</div>
 				<div class="modal-body">
-					<form class="form-vertical" name="wpScanForm">
+					<form class="form-vertical" name="wpScanForm" ng-submit="startScan(wp_type, slug)">
 						<div class="form-group">
 							<label>Type</label>
-							<select class="select form-control" name="type" id="wp_type" ng-model="wp_type" ng-options="x for x in wpTypeOptions" required></select>
+							<select class="select form-control" name="type" id="wp_type" ng-model="wp_type"
+							       ng-options="x for x in wpTypeOptions" required></select>
 							<label class="label-danger label" ng-show="wpScanForm.type.$touched && wpScanForm.type.$invalid">
 								This field is required.
 							</label>

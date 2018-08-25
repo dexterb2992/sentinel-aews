@@ -1,4 +1,5 @@
 function WpScanController($scope, $http, $timeout){
+	$scope.wp_type = "";
 	$scope.wpTypeOptions = ['Plugins', 'Themes'];
 	$scope.AjaxLoading = false;
 	$scope.wpscan = {}; // empty wpscan object
@@ -47,7 +48,7 @@ function WpScanController($scope, $http, $timeout){
         });
 
 		var spinner = $("#start_scan_loader");
-		spinner.removeClass('fa-search').addClass('fa-refresh fa-spin');
+		spinner.removeClass('fa-search').addClass('fa-spinner fa-spin');
 		$scope.AjaxLoading = true;
 
 		$http({
@@ -58,7 +59,7 @@ function WpScanController($scope, $http, $timeout){
 		}).then(function successCallback(response) {
 		    // this callback will be called asynchronously
 		    // when the response is available
-		    spinner.removeClass('fa-refresh fa-spin').addClass('fa-search');
+		    spinner.removeClass('fa-spinner fa-spin').addClass('fa-search');
 			$("#slug").val("");
 			
 			response = response.data;
@@ -126,8 +127,6 @@ function WpScanController($scope, $http, $timeout){
 		});
 	};
 
-	$scope.getWpScans();
-
 	$scope.showPreviousScans = function (){
 		console.log("showing previous scan...");
 		$scope.getWpScans();
@@ -156,6 +155,52 @@ function WpScanController($scope, $http, $timeout){
 			});
 		}
 	};
+
+	/**
+	 * Checks installed plugins/themes against WordPress vulnerabilites being pulled in
+	 *
+	 * @param String type            Either plugins or themes
+	 * @param String tableToLookFor  The ID of the table to look for the match
+	 * @param String tableToAppend   The ID of the table on where to append the results
+	 */
+	$scope.findInVulnerabilities = function (type, tableToLookFrom, tableToAppend) {
+		let _source = window.WPSentinel.plugins,
+		    _tbl = $("#"+tableToAppend),
+		    _row = null;
+
+		if (type == "themes") {
+			_source = window.WPSentinel.plugins;
+		}
+
+		$.each(_source, function (key, item) {
+			// look for the item on the table anchor tags
+			$("#"+tableToLookFrom+" td>a").each(function (i, anchor){
+			    if ($.trim($(anchor).text()) == item.slug) {
+			       _row = $(anchor).parents("tr:first");
+
+			       _tbl.find('tr[data-item="'+item.slug+'"] td:last')
+			       	   .html(
+			       	   		'<span class="label bg-yellow-gradient">'+_row.children("td:nth-child(2)").text()
+			       	   		+'</span>'+_row.children("td:last").html()
+			       	   	);
+
+			       return false; // break the inner iteration
+			    }
+			});
+
+		});
+	};
+
+	$scope.reScan = function (type, slug) {
+		$("#wp_scan_modal").modal('show');
+		$scope.wp_type = type.charAt(0).toUpperCase()+type.substr(1);
+		$scope.slug = slug;
+		$scope.startScan(type, slug);
+	}
+
+	$scope.getWpScans();
+	$scope.findInVulnerabilities("plugins", "tbl_plugins");
+	$scope.findInVulnerabilities("themes", "tbl_themes");
 
 }
 

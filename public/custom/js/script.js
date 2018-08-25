@@ -79,12 +79,12 @@
 
                 process_status.text("Checking to see if "+row+" is up & running...");
                         $this.removeClass('btn-info').addClass('btn-warning')
-                        .children('i').removeClass('fa-hourglass-start').addClass('fa-refresh fa-spin');
+                        .children('i').removeClass('fa-hourglass-start').addClass('fa-spinner fa-spin');
 
                 if( validate_domain(row) ){
                     process_status.html("");
                     $this.removeClass('btn-warning').addClass('btn-info')
-                        .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
+                        .children('i').removeClass('fa-spinner fa-spin').addClass('fa-hourglass-start');
                     
                     // check if site is up & running
                     checkDomain(row).done(function (data){
@@ -152,7 +152,7 @@
                         }
                     },
                     error: function (data){
-                        $this.prev("i.fa-refresh").remove();
+                        $this.prev("i.fa-spinner").remove();
                         $this.html("Delete");
                     }
                 });
@@ -301,12 +301,12 @@
 
     function disableButton($button){
         $button.removeClass('btn-info').addClass('btn-warning')
-            .children('i').removeClass('fa-hourglass-start').addClass('fa-refresh fa-spin');
+            .children('i').removeClass('fa-hourglass-start').addClass('fa-spinner fa-spin');
     }
 
     function enableButton($button){
         $button.removeClass('btn-warning').addClass('btn-info')
-            .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
+            .children('i').removeClass('fa-spinner fa-spin').addClass('fa-hourglass-start');
     }
 
 
@@ -362,6 +362,6 @@
         process_status.text("");
         process_logs.html( process_logs.html()+"<span class='label label-danger'>"+domain+" cannot be reached.</span><br/>" );
         btn.removeClass('btn-warning').addClass('btn-info')
-            .children('i').removeClass('fa-refresh fa-spin').addClass('fa-hourglass-start');
+            .children('i').removeClass('fa-spinner fa-spin').addClass('fa-hourglass-start');
     }
 }));

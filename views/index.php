@@ -18,7 +18,7 @@
 				</div>
 				<div class="form-group">
 					<span class="label label-info" id="process_status"></span>
-					<button class="btn-info btn btn-flat pull-right" id="start_tests">
+					<button class="bg-aqua-gradient btn btn-flat pull-right" id="start_tests">
 						<i class="fa fa-hourglass-start"></i> Start Tests
 					</button>
 				</div>
@@ -28,7 +28,7 @@
 		<div class="row">
 			<div class="col-md-2"></div>
 			<div class="col-md-8">
-				<span class="btn btn-xs btn-flat btn-danger log-option" id="clear_logs" data-toggle="tooltip" data-original-title="Clear logs">Clear</span>
+				<span class="btn btn-xs btn-flat bg-red-gradient log-option" id="clear_logs" data-toggle="tooltip" data-original-title="Clear logs">Clear</span>
 				<!-- <span class="btn-xs btn btn-flat btn-info log-option" id="more_details" data-toggle="tooltip" data-original-title="Show more details">Show more details</span> -->
 				<div class="process_logs" id="process_logs"></div>
 				
