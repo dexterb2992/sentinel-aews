@@ -10,8 +10,9 @@
 	foreach ($installed_plugins as $key => $plugin) {
 		$slug = explode("/", $key); 
 		$filteredPlugins[] = [
-			'name' => $plugin['Name'],
-			'slug' => isset($slug[0]) ? $slug[0] : $key
+			'name'    => $plugin['Name'],
+			'slug'    => isset($slug[0]) ? $slug[0] : $key,
+			'version' => $plugin['Version']
 		];
 	}
 
@@ -24,9 +25,10 @@
 	foreach ($installed_themes as $key => $theme) {
 		$slug = explode("/", $key); 
 		$filteredThemes[] = [
-			'name' => $theme->get('Name'),
-			'slug' => $theme->get('TextDomain'),
-			'current' => $currentTheme->get('TextDomain') == $theme->get('TextDomain') ? true : false
+			'name'    => $theme->get('Name'),
+			'slug'    => $theme->get('TextDomain'),
+			'current' => $currentTheme->get('TextDomain') == $theme->get('TextDomain') ? true : false,
+			'version' => $theme->get('Version')
 		];
 	}
 
@@ -110,7 +112,12 @@
 								<tbody>
 								<?php foreach ($filteredPlugins as $key => $plugin): ?>
 									<tr data-item="<?php echo $plugin['slug']; ?>">
-										<td><?php echo $plugin['slug']; ?></td>
+										<td>
+											<?php echo $plugin['slug']; ?>
+											<span class="label label-default">
+												v<?php echo $plugin['version']; ?>
+											</span>
+										</td>
 										<td><?php echo $plugin['name']; ?></td>
 										<td class="findings">
 											<span class="label bg-teal-gradient" data-toggle="tooltip"
@@ -144,7 +151,12 @@
 								<tbody>
 								<?php foreach ($filteredThemes as $key => $theme): ?>
 									<tr data-item="<?php echo $theme['slug']; ?>">
-										<td><?php echo $theme['slug']; ?></td>
+										<td>
+											<?php echo $theme['slug']; ?>
+											<span class="label label-default">
+												v<?php echo $theme['version']; ?>
+											</span>
+										</td>
 										<td>
 											<?php echo $theme['name']; ?>
 											<?php if ($theme['current']): ?>

@@ -50,6 +50,7 @@ function WpScanController($scope, $http, $timeout){
 		var spinner = $("#start_scan_loader");
 		spinner.removeClass('fa-search').addClass('fa-spinner fa-spin');
 		$scope.AjaxLoading = true;
+		$scope.resultsVulnerabilities = []; // empty old results
 
 		$http({
 			method: 'POST',
@@ -78,7 +79,6 @@ function WpScanController($scope, $http, $timeout){
 			}
 
 			if(!response.response.status){
-				$scope.resultsVulnerabilities = []; // empty old results
 				arr[0].vulnerabilities.name = slug;
 				arr[0].vulnerabilities.url = response.detail;
 				$scope.resultsVulnerabilities.push(arr[0].vulnerabilities);

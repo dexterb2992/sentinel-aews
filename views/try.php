@@ -1,6 +1,6 @@
 <?php
 // echo public_path("custom/images/bg.png");
-$installed_themes = get_plugins();
+$installed_themes = wp_get_themes();
 
 var_dump($installed_themes); die;
 
