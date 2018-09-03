@@ -86,6 +86,10 @@ function js_include($filename, $type){
 		case 'ext': // external urls
 			$src = "";
 			break;
+
+		case 'gcm':
+			$src = __PUBLIC_PATH."gcm/";
+			break;
 	}
 	
 	echo "<script src='{$src}{$filename}'></script>";

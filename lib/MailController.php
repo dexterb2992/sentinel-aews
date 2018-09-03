@@ -2,8 +2,10 @@
 require 'PHPMailer-master/PHPMailerAutoload.php';
 
 class MailContoller{
-	function __construct($Subject = "No Subject", $Body = "", $AltBody = "", $recipient = array(), $attachments = array(), $ccs = array(), $bbcs = array())
-	{
+	function __construct (
+		$Subject = "No Subject", $Body = "", $AltBody = "", $recipient = array(),
+		$attachments = array(), $ccs = array(), $bbcs = array()
+	) {
 		$this->Subject = $Subject;
 		$this->Body = $Body;
 		$this->AltBody = $AltBody;
@@ -13,7 +15,8 @@ class MailContoller{
 		$this->bbcs = $bbcs;
 	}
 
-	function send(){
+	function send()
+	{
 		/* Configuration for Mail */
 		/*$__mailer = array();
 		$__mailer['Host'] = 'smtp.gmail.com';  // Specify main and backup SMTP servers

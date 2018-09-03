@@ -18,3 +18,10 @@
 		Deny from all
 	</IfModule>
 </files>
+
+<files .eslintrc|manifest.json|config.js|main.js|service-worker.js|demo.js|\\gcm\\images\\icon-192x192.png>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Allow from all
+	</IfModule>
+</files>

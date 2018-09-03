@@ -1,8 +1,10 @@
 <?php
 error_reporting(E_ALL);
 
-class CronConfig{
-	function instantiate(){
+class CronConfig
+{
+	public function instantiate()
+	{
 		// $parse_uri = explode( 'tools', $_SERVER['SCRIPT_FILENAME'] );
 		$parse_uri = explode( 'tools', __FILE__ );
 

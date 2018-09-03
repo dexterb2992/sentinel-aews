@@ -54,6 +54,9 @@ class Sentinel{
 		define('__GOOGLE_CLIENT_NAME', 'automatedtoolkit-1278');
 		define('__GOOGLE_API_KEY', 'AIzaSyCRqnTPkTHBhjBbpQCIKJzTcfOyhGMcjEc');
 
+		// Google Cloud Messaging
+		define('__GCM_API_KEY', 'AIzaSyC11fF1sl3KzWzcFzr2wRCcr_FhHCydbp4');
+
 		if( get_current_user_id() < 1 ){
 			echo "<pre style='color:red'>Please <a href='".wp_login_url(__BASE_URL)."'>login</a> to continue...</pre>";
 			if( isset($_SESSION) ){

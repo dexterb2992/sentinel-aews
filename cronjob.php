@@ -1,10 +1,10 @@
 <?php
-$__is_CRON = true;
-include "cron-config.php";
+	$__is_CRON = true;
+	include "cron-config.php";
 
 	include "views/_partials/_header.php";
 
-	?>
+?>
 	<!-- Content Wrapper. Contains page content -->
 	<div class="content-wrapper">
 
@@ -16,8 +16,8 @@ include "cron-config.php";
 		</section><!-- /.content -->
 
 	</div><!-- /.content-wrapper -->
-	<?php
 	
+<?php	
 
 	include "views/_partials/_footer.php"; 
 		

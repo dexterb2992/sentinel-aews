@@ -35,6 +35,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <!-- Include manifest file in the page -->
+    <link rel="manifest" href="./manifest.json">
   </head>
   <!--
   BODY TAG OPTIONS:
