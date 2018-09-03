@@ -1,5 +1,6 @@
 <?php
 require 'PHPMailer-master/PHPMailerAutoload.php';
+include "../vars.php";
 
 class MailContoller{
 	function __construct (
@@ -18,25 +19,15 @@ class MailContoller{
 	function send()
 	{
 		/* Configuration for Mail */
-		/*$__mailer = array();
-		$__mailer['Host'] = 'smtp.gmail.com';  // Specify main and backup SMTP servers
-		$__mailer['SMTPAuth'] = true;                               // Enable SMTP authentication
-		$__mailer['Username'] = 'automatedtoolkit2016@gmail.com';                 // SMTP username
-		$__mailer['Password'] = 'wala123321';                           // SMTP password
-		$__mailer['SMTPSecure'] = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-		$__mailer['Port'] = 587;                                    // TCP port to connect to
-		$__mailer['SenderAddress'] = 'no-reply@automatedtookit.com';     // Email address to appear
-		$__mailer['SenderName'] = 'no-reply@automatedtookit.com';						// Your Name as a sender*/
-
 		$__mailer = array();
-		$__mailer['Host'] = 'mail.stealthytools.com';  // Specify main and backup SMTP servers
+		$__mailer['Host'] = __MAIL_HOST;  // Specify main and backup SMTP servers
 		$__mailer['SMTPAuth'] = true;                               // Enable SMTP authentication
-		$__mailer['Username'] = 'sentinel@stealthytools.com';                 // SMTP username
-		$__mailer['Password'] = 'wala123321';                           // SMTP password
-		$__mailer['SMTPSecure'] = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+		$__mailer['Username'] = __MAIL_USERNAME;                 // SMTP username
+		$__mailer['Password'] = __MAIL_PASSWORD;                           // SMTP password
+		$__mailer['SMTPSecure'] = __MAIL_ENCRYPT;                            // Enable TLS encryption, `ssl` also accepted
 		$__mailer['Port'] = 25;                                    // TCP port to connect to
-		$__mailer['SenderAddress'] = 'sentinel@stealthytools.com';     // Email address to appear
-		$__mailer['SenderName'] = 'no-reply@stealthytools.com';						// Your Name as a sender
+		$__mailer['SenderAddress'] = __MAIL_FROM;     // Email address to appear
+		$__mailer['SenderName'] = __MAIL_SENDER;						// Your Name as a sender
 
 		$mail = new PHPMailer;
 
